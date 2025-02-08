@@ -4,7 +4,7 @@ HEADERS = *.h
 
 CC = cc
 
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -g -fsanitize=address
 
 NAME = m_alloc
 

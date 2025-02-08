@@ -29,7 +29,8 @@ void    return_page(void*);
 // memory arr interface:
 void    add_chunk(void*, size_t, chunk_list*);
 void    remove_chunk(void*, chunk_list*);
-void    merge_chunks();
+bool    merge_chunks(chunk_list* c_list);
+void    defragement(chunk_list* c_list);
 
 // utillitys :
 void    p_chunk_list(chunk_list*);

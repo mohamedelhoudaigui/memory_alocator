@@ -49,28 +49,61 @@ void    remove_chunk(void* start, chunk_list* c_list)
     exit(1);
 }
 
-void    merge_chunks(chunk_list* c_list)
+bool merge_chunks(chunk_list* c_list)
 {
-    // need implementation
+    bool change = false;
+
+    if (c_list->n_chunks <= 1)
+        return change;
+
+    chunk_list tmp = {0};
+    tmp.n_chunks = 0;
+    size_t i = 0;
+
+    while (i < c_list->n_chunks)
+    {
+        chunk current = c_list->chunks[i];
+        chunk next = c_list->chunks[i + 1];
+        if (current.start + current.size == next.start)
+        {
+            add_chunk(current.start, current.size + next.size, &tmp);
+            change = true;
+            i += 2;
+            continue;
+        }
+        // chunk current = c_list->chunks[i];
+        add_chunk(current.start, current.size, &tmp);
+        change = true;
+        i++;
+    }
+
+    *c_list = tmp;
+    return change;
+}
+
+void    defragement(chunk_list* c_list)
+{
+    while (merge_chunks(c_list))
+    {};
 }
 
 
 int main()
 {
     init();
-    add_chunk(NULL, 10, &alloc_chunks);
-    add_chunk(NULL, 10, &alloc_chunks);
-    add_chunk(NULL, 10, &alloc_chunks);
-    add_chunk(NULL, 10, &alloc_chunks);
-
-    // p_chunk_list(&free_chunks);
-    // p_chunk_list(&alloc_chunks);
-
-    remove_chunk(NULL, &alloc_chunks);
-    remove_chunk(NULL, &alloc_chunks);
-    remove_chunk(NULL, &alloc_chunks);
-    remove_chunk(NULL, &alloc_chunks);
-
+    add_chunk((void *)100, 3, &alloc_chunks);
+    add_chunk((void *)103, 3, &alloc_chunks);
+    add_chunk((void *)106, 3, &alloc_chunks);
+    add_chunk((void *)109, 3, &alloc_chunks);
+    add_chunk((void *)112, 3, &alloc_chunks);
+    //
     p_chunk_list(&alloc_chunks);
+    defragement(&alloc_chunks);
+    p_chunk_list(&alloc_chunks);
+    // remove_chunk(NULL, &alloc_chunks);
+    // remove_chunk(NULL, &alloc_chunks);
+    // remove_chunk(NULL, &alloc_chunks);
+    // remove_chunk(NULL, &alloc_chunks);
+
     return (0);
 }

@@ -9,5 +9,5 @@ CFLAGS = -Wall -Wextra -g -fsanitize=address
 NAME = m_alloc
 
 all:
-	$(CC) $(CFLAGS) $(SRCS) $(HEADERS) -o $(NAME)
+	$(CC) $(CFLAGS) $(SRCS) $(HEADERS) #-o $(NAME)
 

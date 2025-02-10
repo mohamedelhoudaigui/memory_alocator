@@ -1,0 +1,5 @@
+*.gch
+*.o
+m_alloc
+Objects
+a.out

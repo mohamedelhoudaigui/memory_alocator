@@ -1,5 +1,6 @@
 #include "memory_alloc.h"
 
+
 void    p_chunk_list(chunk_list* c_list)
 {
     printf("----------------------------------------\n");
@@ -10,7 +11,6 @@ void    p_chunk_list(chunk_list* c_list)
         printf("start: %p - size: %ld\n", c_list->chunks[i].start, c_list->chunks[i].size);
         printf("----------------------------------------\n");
     }
-    printf("\n");
 }
 
 int  get_chunk_index(void* addr, chunk_list* c_list)
@@ -33,7 +33,7 @@ void    add_chunk(void* start, size_t size, chunk_list* c_list, int pos)
     if (c_list->n_chunks == MAX_CHUNKS)
     {
         fprintf(stderr, "number of chunks exeeded MAX_CHUNKS\n");
-        exit(1);
+        abort();
     }
 
     if (pos == -1)
@@ -50,6 +50,7 @@ void    add_chunk(void* start, size_t size, chunk_list* c_list, int pos)
         c_list->chunks[pos].start = start;
         c_list->chunks[pos].size = size;
     }
+    c_list->mem_size += size;
     c_list->n_chunks++;
 }
 
@@ -62,6 +63,7 @@ void    remove_chunk(void* start, chunk_list* c_list)
     {
         memmove(&c_list->chunks[i], &c_list->chunks[i + 1], sizeof(chunk));
     }
+    c_list->mem_size -= c_list->chunks[c].size;
     c_list->n_chunks--;
 }
 

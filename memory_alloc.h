@@ -8,8 +8,8 @@
 #include    <stdbool.h>
 #include    <string.h>
 
-#define PAGE_SIZE   1026
-#define MAX_CHUNKS  100
+#define PAGE_SIZE   1024
+#define MAX_CHUNKS  1024
 
 typedef struct  chunk
 {
@@ -19,15 +19,18 @@ typedef struct  chunk
 
 typedef struct  chunk_list
 {
-    chunk    chunks[MAX_CHUNKS];
-    size_t          n_chunks;
+    chunk   chunks[MAX_CHUNKS];
+    size_t  n_chunks;
+    size_t  mem_size;
+
 }               chunk_list;
 
 // request memory interface :
 void*   request_page();
 void    return_page(void* addr);
 
-// memory arr interface:
+// memory arr interface :
+void    add_memory_page(chunk_list* c_list);
 void    m_free(void *mem);
 void    *alloc(size_t size);
 void    *m_alloc(size_t bytes);
@@ -40,6 +43,9 @@ bool    merge_chunks(chunk_list* c_list);
 void    defragement(chunk_list* c_list);
 int     get_chunk_index(void* addr, chunk_list* c_list);
 size_t  get_chunk_insert(void* addr, chunk_list* free_chunks, chunk_list* alloc_chunks);
+void    debug();
 
+// tests:
+void fragmentation_test();
 
 #endif

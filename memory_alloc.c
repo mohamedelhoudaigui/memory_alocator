@@ -3,11 +3,9 @@
 static struct chunk_list   free_chunks;
 static struct chunk_list   alloc_chunks;
 
-void init()
+void    add_memory_page(chunk_list* c_list)
 {
-    free_chunks.chunks[0].start = request_page();
-    free_chunks.chunks[0].size = PAGE_SIZE;
-    free_chunks.n_chunks = 1;
+    add_chunk(request_page(), PAGE_SIZE, c_list, -1);
 }
 
 void    *alloc(size_t size)
@@ -34,6 +32,10 @@ void    *m_alloc(size_t bytes)
 {
     if (bytes == 0)
         return (NULL);
+    if (free_chunks.mem_size < bytes)
+    {
+        add_memory_page(&free_chunks);
+    }
     void *result = alloc(bytes);
     return (result);
 }
@@ -56,24 +58,10 @@ void    debug()
 {
     p_chunk_list(&alloc_chunks);
     p_chunk_list(&free_chunks);
-
 }
 
 int main()
 {
-    init();
-    void    *mem1 = m_alloc(10);
-    void    *mem2 = m_alloc(10);
-    void    *mem3 = m_alloc(10);
-
-    printf("%p\n%p\n%p\n", mem1, mem2, mem3);
-    printf("\n");
-
-    debug();
-    m_free(mem1);
-    m_free(mem2);
-    m_free(mem3);
-    debug();
-
+    fragmentation_test();
     return (0);
 }

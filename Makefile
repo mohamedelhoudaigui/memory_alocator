@@ -1,6 +1,7 @@
 SRCS = memory_alloc.c \
 	   mem_interface.c \
-	   utils.c
+	   utils.c \
+	   tests.c
 
 OBJS = $(patsubst %.cpp, %.o, $(SRCS))
 

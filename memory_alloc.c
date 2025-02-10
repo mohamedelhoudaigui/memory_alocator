@@ -1,109 +1,79 @@
 #include "memory_alloc.h"
 
-static struct chunk_list   free_chunks = {0};
-static struct chunk_list   alloc_chunks = {0};
+static struct chunk_list   free_chunks;
+static struct chunk_list   alloc_chunks;
 
-
-// init the heap with one PAGE_SIZE chunk
-void    init()
+void init()
 {
-    chunk s = {
-        .start = request_page(),
-        .size = PAGE_SIZE
-    };
-    free_chunks.chunks[0] = s;
-    free_chunks.n_chunks++;
+    free_chunks.chunks[0].start = request_page();
+    free_chunks.chunks[0].size = PAGE_SIZE;
+    free_chunks.n_chunks = 1;
 }
 
-
-void    add_chunk(void* start, size_t size, chunk_list* c_list)
+void    *alloc(size_t size)
 {
-    if (c_list->n_chunks == MAX_CHUNKS)
-    {
-        fprintf(stderr, "number of chunks exeeded MAX_CHUNKS\n");
-        exit(1);
-    }
-    chunk s = {
-        .start = start,
-        .size = size
-    };
-    c_list->chunks[c_list->n_chunks] = s;
-    c_list->n_chunks++;
-}
+    chunk   c = {0};
 
-void    remove_chunk(void* start, chunk_list* c_list)
-{
-    for (size_t i = 0; i < c_list->n_chunks; ++i)
+    for (size_t i = 0; i < free_chunks.n_chunks; ++i)
     {
-        if (c_list->chunks[i].start == start)
+        c = free_chunks.chunks[i];
+        if (c.size >= size)
         {
-            for (size_t j = i + 1; j < c_list->n_chunks; ++j)
-            {
-                c_list->chunks[j - 1] = c_list->chunks[j];
-            }
-            c_list->n_chunks--;
-            return ;
+            int shard_size = c.size - size;
+            remove_chunk(c.start, &free_chunks);
+            add_chunk(c.start, size, &alloc_chunks, -1);
+            add_chunk(c.start + size, shard_size, &free_chunks, -1);
+            return (c.start);
         }
     }
-    fprintf(stderr, "error removing a chunk with invalid address\n");
-    exit(1);
+    fprintf(stderr, "no chunk found\n");
+    return (NULL);
 }
 
-bool merge_chunks(chunk_list* c_list)
+void    *m_alloc(size_t bytes)
 {
-    bool change = false;
-
-    if (c_list->n_chunks <= 1)
-        return change;
-
-    chunk_list tmp = {0};
-    tmp.n_chunks = 0;
-    size_t i = 0;
-
-    while (i < c_list->n_chunks)
-    {
-        chunk current = c_list->chunks[i];
-        chunk next = c_list->chunks[i + 1];
-        if (current.start + current.size == next.start)
-        {
-            add_chunk(current.start, current.size + next.size, &tmp);
-            change = true;
-            i += 2;
-            continue;
-        }
-        // chunk current = c_list->chunks[i];
-        add_chunk(current.start, current.size, &tmp);
-        change = true;
-        i++;
-    }
-
-    *c_list = tmp;
-    return change;
+    if (bytes == 0)
+        return (NULL);
+    void *result = alloc(bytes);
+    return (result);
 }
 
-void    defragement(chunk_list* c_list)
+void    m_free(void *mem)
 {
-    while (merge_chunks(c_list))
-    {};
+    if (mem == NULL)
+        return ;
+    int c_index = get_chunk_index(mem, &alloc_chunks);
+    if (c_index == -1)
+        return ;
+    chunk c = alloc_chunks.chunks[c_index];
+    int pos = get_chunk_insert(mem, &free_chunks, &alloc_chunks);
+    add_chunk(c.start, c.size, &free_chunks, pos);
+    remove_chunk(mem, &alloc_chunks);
+    defragement(&free_chunks);
 }
 
+void    debug()
+{
+    p_chunk_list(&alloc_chunks);
+    p_chunk_list(&free_chunks);
+
+}
 
 int main()
 {
     init();
-    add_chunk((void *)100, 3, &alloc_chunks);
-    add_chunk((void *)103, 3, &alloc_chunks);
-    add_chunk((void *)106, 3, &alloc_chunks);
-    add_chunk((void *)109, 3, &alloc_chunks);
-    add_chunk((void *)112, 3, &alloc_chunks);
-    //
-    p_chunk_list(&alloc_chunks);
-    defragement(&alloc_chunks);
-    p_chunk_list(&alloc_chunks);
-    // remove_chunk(NULL, &alloc_chunks);
-    // remove_chunk(NULL, &alloc_chunks);
-    // remove_chunk(NULL, &alloc_chunks);
-    // remove_chunk(NULL, &alloc_chunks);
+    void    *mem1 = m_alloc(10);
+    void    *mem2 = m_alloc(10);
+    void    *mem3 = m_alloc(10);
+
+    printf("%p\n%p\n%p\n", mem1, mem2, mem3);
+    printf("\n");
+
+    debug();
+    m_free(mem1);
+    m_free(mem2);
+    m_free(mem3);
+    debug();
 
     return (0);
 }

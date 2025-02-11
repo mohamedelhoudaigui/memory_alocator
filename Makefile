@@ -14,7 +14,7 @@ HEADERS = memory_alloc.h
 CC = cc
 
 # Compiler flags
-CFLAGS = -Wall -Wextra -Werror -std=c11 -g -O3 -fsanitize=address -D_GNU_SOURCE
+CFLAGS = -Wall -Wextra -Werror -std=c11 -g -D_GNU_SOURCE
 
 # Name of the static library
 LIB_NAME = libm_alloc.a

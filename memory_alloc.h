@@ -33,8 +33,9 @@ void return_page(void *addr);
 
 // memory arr interface :
 void add_memory_page(chunk_list *c_list);
-void m_free(void *mem);
+void debug();
 void *alloc(size_t size);
+void m_free(void *mem);
 void *m_alloc(size_t bytes);
 
 // utillitys :
@@ -46,7 +47,6 @@ void defragement(chunk_list *c_list);
 int get_chunk_index(void *addr, chunk_list *c_list);
 size_t get_chunk_insert(void *addr, chunk_list *free_chunks,
                         chunk_list *alloc_chunks);
-void debug();
 
 // tests:
 void test_fragmentation();

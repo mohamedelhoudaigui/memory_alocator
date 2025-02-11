@@ -4,7 +4,15 @@ static struct chunk_list free_chunks = {0};
 static struct chunk_list alloc_chunks = {0};
 
 void add_memory_page(chunk_list *c_list) {
-  add_chunk(request_page(), PAGE_SIZE, c_list, -1);
+  add_chunk(request_page(), PAGE_SIZE, c_list, 0);
+}
+
+void debug() {
+    printf("alloc chunks:\n");
+    p_chunk_list(&alloc_chunks);
+    printf("free chunks:\n");
+    p_chunk_list(&free_chunks);
+    printf("-----------------------\n");
 }
 
 void *alloc(size_t size) {
@@ -18,16 +26,18 @@ void *alloc(size_t size) {
       return (c.start);
     }
   }
-
   fprintf(stderr, "no chunk found\n");
   return (NULL);
 }
 
+//------user-interface:
+
 void *m_alloc(size_t bytes) {
   if (bytes == 0)
     return (NULL);
-  if (free_chunks.mem_size < bytes) {
+  while (free_chunks.mem_size <= bytes) {
     add_memory_page(&free_chunks);
+    defragement(&free_chunks);
   }
   void *result = alloc(bytes);
   return (result);
@@ -46,21 +56,3 @@ void m_free(void *mem) {
   defragement(&free_chunks);
 }
 
-void debug() {
-  p_chunk_list(&alloc_chunks);
-  p_chunk_list(&free_chunks);
-}
-
-int main() {
-  // test_fragmentation();
-  // test_overallocation();
-  //  test_edgecases();
-  debug();
-  add_memory_page(&free_chunks);
-  debug();
-  add_memory_page(&free_chunks);
-  debug();
-  defragement(&free_chunks);
-  debug();
-  return (0);
-}

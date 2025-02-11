@@ -1,12 +1,16 @@
 #ifndef MEMORY_ALLOC
 #define MEMORY_ALLOC
 
+#ifndef _GNU_SOURCE
+    #define _GNU_SOURCE
+#endif
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/mman.h>
 #include <unistd.h>
+#include <sys/mman.h>
 
 #define PAGE_SIZE 4096
 #define MAX_CHUNKS 4096
@@ -48,4 +52,5 @@ void debug();
 void test_fragmentation();
 void test_overallocation();
 void test_edgecases();
+
 #endif

@@ -25,7 +25,21 @@ void test_overallocation() {
 void test_edgecases() {
   void *a = m_alloc(4097);
   printf("size PAGE_SIZE + 1 = %p\n", a);
-  // m_free(a);
-  // m_free(NULL);
-  // m_free((void *)67);
+  m_free(a);
+  m_free(NULL);
+  for (int i = 0; i < 100; ++i)
+    {
+        void* m1 = m_alloc(69);
+        void* m2 = m_alloc(69);
+        void* m3 = m_alloc(69);
+        void* m4 = m_alloc(69);
+        void* m5 = m_alloc(69);
+        m_free(m1);
+        m_free(m2);
+        m_free(m3);
+        m_free(m4);
+        m_free(m5);
+    }
+    debug();
 }
+

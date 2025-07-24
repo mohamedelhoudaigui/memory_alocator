@@ -1,10 +1,14 @@
 #include "./memory_alloc.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 int main()
 {
-	void	*g = ft_malloc(15);
-	printf("%p\n", g);
-	ft_free(g);
+	for (int i = 1; i < 33; ++i)
+	{
+		void	*a = ft_malloc(ALIGN_N + i);
+		void	*b = ft_realloc(a, ALIGN_N + 1);
+		printf("%zu - %zu\n", (uintptr_t)a % ALIGN_N, (uintptr_t)b % ALIGN_N);
+		ft_free(a);
+	}
+	debug();
+
 }

@@ -1,8 +1,7 @@
 # Source files
 SRCS = memory_alloc.c \
        mem_interface.c \
-       utils.c \
-       tests.c
+       utils.c 
 
 # Object files
 OBJS = $(patsubst %.c, %.o, $(SRCS))
@@ -13,18 +12,24 @@ HEADERS = memory_alloc.h
 # Compiler
 CC = cc
 
+ifeq ($(HOSTTYPE),)
+	HOSTTYPE := $(shell uname -m)_$(shell uname -s)
+endif
+
 # Compiler flags
-CFLAGS = -Wall -Wextra -Werror -std=c11 -g -D_GNU_SOURCE
+CFLAGS = -Wall -Wextra -Werror -g
 
 # Name of the static library
-LIB_NAME = libm_alloc.a
+LIB_ARCH_NAME = libft_alloc_$(HOSTTYPE).so
+LIB_NAME = libft_alloc.so
 
 # Default target
-all: $(LIB_NAME)
+all: $(LIB_ARCH_NAME)
 
 # Rule to create the static library
-$(LIB_NAME): $(OBJS)
-	ar rcs $(LIB_NAME) $(OBJS)
+$(LIB_ARCH_NAME): $(OBJS)
+	$(CC) -shared -o $(LIB_ARCH_NAME) $(OBJS)
+	ln -sf $(LIB_ARCH_NAME) $(LIB_NAME)
 
 # Rule to compile source files into object files
 %.o: %.c $(HEADERS)
@@ -32,7 +37,15 @@ $(LIB_NAME): $(OBJS)
 
 # Clean up build artifacts
 clean:
-	rm -f $(OBJS) $(LIB_NAME)
+	rm -f $(OBJS)
+	rm -f test
+
+fclean: clean
+	rm -f $(LIB_NAME) $(LIB_ARCH_NAME)
+
+main:
+	$(CC) -o test -L. -lft_alloc -g main.c
+
 
 # Rebuild the library
-re: clean all
+re: clean all main

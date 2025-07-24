@@ -1,5 +1,5 @@
 *.gch
 *.o
-m_alloc
-Objects
+*.so
+test
 a.out

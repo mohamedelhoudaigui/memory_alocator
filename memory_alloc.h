@@ -15,17 +15,31 @@
 #define PAGE_SIZE 4096
 #define MAX_CHUNKS 4096
 
-typedef struct chunk {
+typedef struct chunk
+{
   void *start;
   size_t size;
+
 } chunk;
 
-typedef struct chunk_list {
+typedef struct chunk_list
+{
   chunk chunks[MAX_CHUNKS];
   size_t n_chunks;
   size_t mem_size;
 
 } chunk_list;
+
+typedef struct malloc_lists
+{
+  chunk_list  free_chunks;
+  chunk_list  alloc_chunks;
+
+} malloc_lists;
+
+
+extern malloc_lists g_lists;
+
 
 // request memory interface :
 void *request_page();
@@ -35,8 +49,8 @@ void return_page(void *addr);
 void add_memory_page(chunk_list *c_list);
 void debug();
 void *alloc(size_t size);
-void m_free(void *mem);
-void *m_alloc(size_t bytes);
+void ft_free(void *mem);
+void *ft_malloc(size_t bytes);
 
 // utillitys :
 void p_chunk_list(chunk_list *c_list);

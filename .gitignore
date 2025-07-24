@@ -3,3 +3,4 @@
 *.so
 test
 a.out
+test.dSYM/
